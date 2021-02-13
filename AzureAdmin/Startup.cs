@@ -1,4 +1,4 @@
-//    __ _/| _/. _  ._/__ /
+﻿//    __ _/| _/. _  ._/__ /
 // _\/_// /_///_// / /_|/
 //            _/
 // sof digital 2021
@@ -21,47 +21,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace AzureAdmin
 {
-    public class Worker : BackgroundService
+    public class Startup
     {
-        private readonly ILogger<Worker> _logger;
+        public IConfiguration Configuration { get; }
 
-        public Worker(ILogger<Worker> logger)
+        public Startup(IConfiguration configuration)
         {
-            _logger = logger;
+            Configuration = configuration;
         }
 
-        public override async Task StartAsync(CancellationToken cancellationToken)
+        public void ConfigureServices(IServiceCollection services)
         {
-            // DO YOUR STUFF HERE
-            await base.StartAsync(cancellationToken);
+            services.AddControllers();
         }
 
-        public override async Task StopAsync(CancellationToken cancellationToken)
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            // DO YOUR STUFF HERE
-            await base.StopAsync(cancellationToken);
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            if (env.IsDevelopment())
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
+                app.UseDeveloperExceptionPage();
             }
-        }
 
-        public override void Dispose()
-        {
-            // DO YOUR STUFF HERE
+            app.UseRouting();
+            app.UseAuthorization();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+            });
         }
     }
 }

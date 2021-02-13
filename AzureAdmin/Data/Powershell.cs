@@ -1,4 +1,4 @@
-//    __ _/| _/. _  ._/__ /
+﻿//    __ _/| _/. _  ._/__ /
 // _\/_// /_///_// / /_|/
 //            _/
 // sof digital 2021
@@ -21,47 +21,43 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using System;
-using System.Threading;
-using System.Threading.Tasks;
+using System.Diagnostics;
 
-namespace AzureAdmin
+namespace AzureAdmin.Data
 {
-    public class Worker : BackgroundService
+    public static class Powershell
     {
-        private readonly ILogger<Worker> _logger;
-
-        public Worker(ILogger<Worker> logger)
+        public static ShellInvokeRequest RemoveAppxPackage(string appId)
         {
-            _logger = logger;
+            return LaunchCommand("powershell.exe", $"Get-AppxPackage -all *{appId}* | Remove-AppxPackage -AllUsers");
         }
 
-        public override async Task StartAsync(CancellationToken cancellationToken)
+        private static ShellInvokeRequest LaunchCommand(string uri, string args)
         {
-            // DO YOUR STUFF HERE
-            await base.StartAsync(cancellationToken);
-        }
+            var pr = new ShellInvokeRequest();
+            var psi = new ProcessStartInfo();
+            psi.UseShellExecute = false;
+            psi.CreateNoWindow = false;
+            psi.Arguments = args;
+            psi.RedirectStandardOutput = true;
+            psi.WindowStyle = ProcessWindowStyle.Hidden;
+            psi.FileName = uri;
 
-        public override async Task StopAsync(CancellationToken cancellationToken)
-        {
-            // DO YOUR STUFF HERE
-            await base.StopAsync(cancellationToken);
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
+            try
             {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
+                var proc = Process.Start(psi);
+                proc.WaitForExit();
+                pr.ExitCode = (proc.ExitCode == 0) ? true : false;
+                pr.Output = proc.StandardOutput.ReadToEnd();
             }
-        }
+            catch (Exception ex)
+            {
+                pr.ExitCode = false;
+                pr.Output = string.Empty;
+            }
 
-        public override void Dispose()
-        {
-            // DO YOUR STUFF HERE
+            return pr;
         }
     }
 }

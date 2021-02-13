@@ -1,4 +1,4 @@
-//    __ _/| _/. _  ._/__ /
+﻿//    __ _/| _/. _  ._/__ /
 // _\/_// /_///_// / /_|/
 //            _/
 // sof digital 2021
@@ -21,47 +21,12 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
 
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
-namespace AzureAdmin
+namespace AzureAdmin.Data
 {
-    public class Worker : BackgroundService
+    public class ShellInvokeRequest
     {
-        private readonly ILogger<Worker> _logger;
-
-        public Worker(ILogger<Worker> logger)
-        {
-            _logger = logger;
-        }
-
-        public override async Task StartAsync(CancellationToken cancellationToken)
-        {
-            // DO YOUR STUFF HERE
-            await base.StartAsync(cancellationToken);
-        }
-
-        public override async Task StopAsync(CancellationToken cancellationToken)
-        {
-            // DO YOUR STUFF HERE
-            await base.StopAsync(cancellationToken);
-        }
-
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                await Task.Delay(1000, stoppingToken);
-            }
-        }
-
-        public override void Dispose()
-        {
-            // DO YOUR STUFF HERE
-        }
+        public bool ExitCode { get; set; }
+        public string Output { get; set; }
     }
 }
