@@ -2,7 +2,7 @@
 Access Elevated Privileged Operations with Azure Self-Hosted Pipelines
 
 * Features
-	* .Net Core Worker Serice
+	* .Net Core Worker Service
 	* Run powershell web requests from Azure yml file
 	* Run service as appropriate admin to run elevated commands
     * USE CASE : Remove Appx Package before installation for UI testing
